@@ -1,8 +1,10 @@
-import { ClosePopup, ImagePopup } from '../components/modal';
-import { createCard, deleteCard } from './card';
-import { placesList } from '../index';
+import { closePopup } from '../components/modal';
+import { createCard, deleteCard, addLike } from './card';
+import { placesList, openImagePopup, popupProfile, popupNewCard} from '../index.js';
 
 const formProfile = document.forms["edit-profile"];
+const formNewPlace = document.forms["new-place"];
+
 const nameFamily = formProfile.elements.name;
 const profession = formProfile.elements.description;
 
@@ -13,27 +15,24 @@ const userProfession = document.querySelector('.profile__description');
 
 
 // функция для установки начальных значений в форме профайла
-export function FormValueProfileStart() {
+export function startFormValueProfile() {
     nameFamily.value = userName.textContent;
     profession.value = userProfession.textContent;
 }
 
 // функция редактирования профиля
-export function handleFormSubmit(evt) {
+export function handleFormSubmitProfile(evt) {
     evt.preventDefault();
 
     userName.textContent = nameFamily.value;
     userProfession.textContent = profession.value;
 
-    const del = document.querySelector('.popup_is-opened');
-    ClosePopup(del);
+    closePopup(popupProfile);
 }
 
 //функция добавления карточки
 export function addNewPlace(evt) {
     evt.preventDefault();
-
-    const formNewPlace = document.forms["new-place"];
 
     const placeName = formNewPlace.elements["place-name"];
     const placeLink = formNewPlace.elements.link;
@@ -43,10 +42,8 @@ export function addNewPlace(evt) {
         link: placeLink.value
     };
 
-    const newElement = createCard(cardTemplate, element, deleteCard, ImagePopup);
+    const newElement = createCard(cardTemplate, element, deleteCard, openImagePopup, addLike);
     placesList.prepend(newElement);
 
-
-    const del = document.querySelector('.popup_is-opened');
-    ClosePopup(del);
+    closePopup( popupNewCard);
 }

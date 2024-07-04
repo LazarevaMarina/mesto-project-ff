@@ -1,60 +1,39 @@
-import { container_page, popupImage, popupTitle, Image } from '../index';
-
 // функции добавления слушателей при открытом попапе
-export function closeModal() {
+export function addEventListenerClose() {
     const popupActiv = document.querySelector('.popup_is-opened');
     const closePopupActiv = popupActiv.querySelector('.popup__close');
 
-    document.addEventListener('keydown', ClosePopupEsc);
-
-    closePopupActiv.addEventListener('click', ClosePopupButton);
-
-    document.addEventListener('click', ClosePopupOverlay);
+    document.addEventListener('keydown', closePopupEsc);
+    closePopupActiv.addEventListener('click', () => { closePopup(popupActiv) });
+    document.addEventListener('click', closePopupOverlay);
 };
 
 // функция закрытия попапа по esc
-function ClosePopupEsc(evt) {
+function closePopupEsc(evt) {
     if (evt.key === "Escape") {
-        ClosePopupButton(evt)
-    };
-}
+        const popupActiv = document.querySelector('.popup_is-opened');
+        closePopup(popupActiv);
 
-// функция для закрытия попапа через крест
-function ClosePopupButton(evt) {
-    const del = container_page.querySelector('.popup_is-opened');
-    removeEventListenerPopup();
-    ClosePopup(del);
+    };
 }
 
 // функция закрытия по оверлею
-function ClosePopupOverlay(evt) {
+function closePopupOverlay(evt) {
     if (evt.target.classList.value.includes('popup_type')) {
-        ClosePopupButton(evt)
+        const popupActiv = document.querySelector('.popup_is-opened');
+        closePopup(popupActiv);
     };
 }
 
-// функия закрытия попапа
-export function ClosePopup(del) {
-    del.classList.remove('popup_is-opened')
-}
-
-// функция для удаления слушателей
-export function removeEventListenerPopup() {
-    const popupActiv = document.querySelector('.popup_is-opened');
+// функция закрытия попапа и снятия слушателей
+export function closePopup(popupActiv) {
     const closePopupActiv = popupActiv.querySelector('.popup__close');
 
-    container_page.removeEventListener('keydown', closeModal);
-    closePopupActiv.removeEventListener('click', closeModal);
-    container_page.removeEventListener('click', closeModal);
-};
+    document.removeEventListener('keydown', addEventListenerClose);
+    closePopupActiv.removeEventListener('click', addEventListenerClose);
+    document.removeEventListener('click', addEventListenerClose);
 
-// функция для открытия попапа с карточкой
-export function ImagePopup(image) {
-    Image.src = image.link;
-    Image.alt = image.name;
-    popupTitle.textContent = image.name;
-    popupImage.classList.add('popup_is-opened');
-
+    popupActiv.classList.remove('popup_is-opened');
 }
 
 // функция открытия попапа

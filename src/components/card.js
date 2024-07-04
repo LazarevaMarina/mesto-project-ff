@@ -1,25 +1,27 @@
-import { closeModal } from '../components/modal.js';
+import { addEventListenerClose } from '../components/modal.js';
+import { openImagePopup } from '../index.js';
 
 
-export function createCard(cardTemplate, element, deleteCard, ImagePopup, LikeAdd) {
+export function createCard(cardTemplate, element, deleteCard, openImagePopup, addLike) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const deleteButton = cardElement.querySelector('.card__delete-button');
     const cardElementImage = cardElement.querySelector('.card__image');
     const likeButton = cardElement.querySelector('.card__like-button');
+    const cardElementTitle = cardElement.querySelector('.card__title');
 
     deleteButton.addEventListener('click', deleteCard);
 
-    cardElement.querySelector('.card__image').src = element.link;
-    cardElement.querySelector('.card__image').alt = element.name;
-    cardElement.querySelector('.card__title').textContent = element.name;
+    cardElementImage.src =  element.link;
+    cardElementImage.alt = element.name;
+    cardElementTitle.textContent = element.name;
 
     cardElementImage.addEventListener('click', () => {
-        ImagePopup(element);
-        closeModal();
+        openImagePopup(element);
+        addEventListenerClose();
     });
 
     likeButton.addEventListener('click', () => {
-        LikeAdd(likeButton);
+        addLike(likeButton);
     });
 
     return cardElement;
@@ -30,7 +32,7 @@ export function deleteCard(evt) {
     const evtTarget = evt.target.closest('.places__item').remove();
 };
 
-export function LikeAdd(likeButton) {
+export function addLike(likeButton) {
     if (likeButton.classList.contains('card__like-button_is-active')) {
         likeButton.classList.remove('card__like-button_is-active');
     }
