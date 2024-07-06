@@ -1,7 +1,3 @@
-import { addEventListenerClose } from '../components/modal.js';
-import { openImagePopup } from '../index.js';
-
-
 export function createCard(cardTemplate, element, deleteCard, openImagePopup, addLike) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const deleteButton = cardElement.querySelector('.card__delete-button');
@@ -17,7 +13,6 @@ export function createCard(cardTemplate, element, deleteCard, openImagePopup, ad
 
     cardElementImage.addEventListener('click', () => {
         openImagePopup(element);
-        addEventListenerClose();
     });
 
     likeButton.addEventListener('click', () => {

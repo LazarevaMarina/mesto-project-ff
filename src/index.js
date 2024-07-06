@@ -1,9 +1,8 @@
-
 import './pages/index.css';
-import { initialCards } from '../scripts/cards.js';
+import { initialCards } from './cards.js';
 import { createCard, deleteCard, addLike } from '../src/components/card.js';
-import { openModal, addEventListenerClose } from '../src/components/modal.js';
-import { startFormValueProfile, handleFormSubmitProfile, addNewPlace } from './components/forms.js';
+import { closePopup, openModal} from '../src/components/modal.js';
+import { startValueFormProfile, handleFormSubmitProfile, addNewPlace } from './components/forms.js';
 
 
 const containerMain = document.querySelector('.content');
@@ -22,6 +21,8 @@ export const containerPage = document.querySelector('.page');
 export const popupImage = document.querySelector('.popup_type_image');
 const popupTitle = popupImage.querySelector('.popup__caption');
 const imageCard = popupImage.querySelector('.popup__image');
+const closePopupAll = document.querySelectorAll('.popup__close');
+
 
 
 // перебор и выведение карточек
@@ -38,15 +39,15 @@ allPopups.forEach(function (popup) {
 // слушатель для открытия попапа с профайлом
 profileEditButton.addEventListener('click', function (evt) {
     openModal(popupProfile);
-    addEventListenerClose();
-    startFormValueProfile();
+
+    startValueFormProfile();
 }
 );
 
 // слушатель для открытия попапа для создания новой карточки
 addButton.addEventListener('click', function (evt) {
     openModal(popupNewCard);
-    addEventListenerClose;
+
 });
 
 // слушатель для редактирования профиля и отправки на сервер
@@ -59,6 +60,13 @@ export function openImagePopup(image) {
     imageCard.src = image.link;
     imageCard.alt = image.name;
     popupTitle.textContent = image.name;
-    popupImage.classList.add('popup_is-opened');
+    openModal(popupImage);
 
 };
+
+// слушатель закрытия попапа через крест
+closePopupAll.forEach((element) => {
+    element.addEventListener('click', () => { 
+        const popupActiv = document.querySelector('.popup_is-opened');
+        closePopup(popupActiv) });
+});

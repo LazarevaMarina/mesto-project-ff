@@ -15,7 +15,7 @@ const userProfession = document.querySelector('.profile__description');
 
 
 // функция для установки начальных значений в форме профайла
-export function startFormValueProfile() {
+export function startValueFormProfile() {
     nameFamily.value = userName.textContent;
     profession.value = userProfession.textContent;
 }
