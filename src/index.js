@@ -12,6 +12,9 @@ const cardTemplate = document.querySelector('#card-template').content;
 const profileEditButton = containerMain.querySelector('.profile__edit-button');
 export const popupProfile = document.querySelector('.popup_type_edit');
 export const popupNewCard = document.querySelector('.popup_type_new-card');
+const inputPlaceNewCard = popupNewCard.querySelector('.popup__input_type_card-name');
+const inputLinkNewCard = popupNewCard.querySelector('.popup__input_type_url');
+
 const allPopups = document.querySelectorAll('.popup');
 
 export const formProfile = document.forms["edit-profile"];
@@ -22,7 +25,6 @@ export const popupImage = document.querySelector('.popup_type_image');
 const popupTitle = popupImage.querySelector('.popup__caption');
 const imageCard = popupImage.querySelector('.popup__image');
 const closePopupAll = document.querySelectorAll('.popup__close');
-
 
 
 // перебор и выведение карточек
@@ -48,6 +50,8 @@ profileEditButton.addEventListener('click', function (evt) {
 addButton.addEventListener('click', function (evt) {
     openModal(popupNewCard);
 
+    inputPlaceNewCard.value = '';
+    inputLinkNewCard.value = '';
 });
 
 // слушатель для редактирования профиля и отправки на сервер
@@ -61,7 +65,6 @@ export function openImagePopup(image) {
     imageCard.alt = image.name;
     popupTitle.textContent = image.name;
     openModal(popupImage);
-
 };
 
 // слушатель закрытия попапа через крест
