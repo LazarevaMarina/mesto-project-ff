@@ -35,3 +35,4 @@ export function addLike(likeButton) {
         likeButton.classList.add('card__like-button_is-active');
     }
 }
+
