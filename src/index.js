@@ -73,3 +73,9 @@ closePopupAll.forEach((element) => {
         const popupActiv = document.querySelector('.popup_is-opened');
         closePopup(popupActiv) });
 });
+
+
+
+const formInput = formProfile.querySelector('.popup__input');
+
+formInput.addEventListener('input', function(){console.log(123)});
