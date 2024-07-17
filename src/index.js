@@ -90,12 +90,12 @@ function isValid() {
 
 // Функция, которая добавляет класс с ошибкой
 const showInputError = (element) => {
-    element.classList.add('form__input_type_error');
+    element.classList.add('popup__input_type_error');
     console.log(3333);
   };
 
 // Функция, которая удаляет класс с ошибкой
 const hideInputError = (element) => {
-    element.classList.remove('form__input_type_error');
+    element.classList.remove('popup__input_type_error');
     console.log(4444);
   };
