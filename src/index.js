@@ -43,6 +43,8 @@ profileEditButton.addEventListener('click', function (evt) {
     openModal(popupProfile);
 
     startValueFormProfile();
+
+    console.log(2222);
 }
 );
 
