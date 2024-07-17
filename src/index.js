@@ -43,8 +43,6 @@ profileEditButton.addEventListener('click', function (evt) {
     openModal(popupProfile);
 
     startValueFormProfile();
-
-    console.log(2222);
 }
 );
 
@@ -80,4 +78,10 @@ closePopupAll.forEach((element) => {
 
 const formInput = formProfile.querySelector('.popup__input');
 
-formInput.addEventListener('input', function(){console.log(123)});
+formInput.addEventListener('input', isValid);
+
+function isValid() {
+    if(!formInput.validity.valid) {
+        console.log(1111);
+    } else {console.log(2222);}
+}
