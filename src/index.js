@@ -78,10 +78,24 @@ closePopupAll.forEach((element) => {
 
 const formInput = formProfile.querySelector('.popup__input');
 
+// слушатель полей формы для валидации
 formInput.addEventListener('input', isValid);
 
+// валидация всех форм
 function isValid() {
     if(!formInput.validity.valid) {
-        console.log(1111);
-    } else {console.log(2222);}
-}
+        showInputError(formInput);
+    } else {hideInputError(formInput);}
+};
+
+// Функция, которая добавляет класс с ошибкой
+const showInputError = (element) => {
+    element.classList.add('form__input_type_error');
+    console.log(3333);
+  };
+
+// Функция, которая удаляет класс с ошибкой
+const hideInputError = (element) => {
+    element.classList.remove('form__input_type_error');
+    console.log(4444);
+  };
