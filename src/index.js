@@ -90,7 +90,7 @@ function isValid() {
 
 // Функция, которая добавляет класс с ошибкой
 const showInputError = (element) => {
-    const formError = element.querySelector('.popup__input_type_name');
+    const formError = element.querySelector('.form__input-error-name');
 
     element.classList.add('popup__input_type_error');
     formError.classList.add('popup__error_visible');
