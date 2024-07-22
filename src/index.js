@@ -26,6 +26,8 @@ const popupTitle = popupImage.querySelector('.popup__caption');
 const imageCard = popupImage.querySelector('.popup__image');
 const closePopupAll = document.querySelectorAll('.popup__close');
 
+import { validationConfig, clearValidation, enableValidation} from './components/validation.js';
+
 
 // перебор и выведение карточек
 initialCards.forEach(function addCard(cardElement) {
@@ -40,6 +42,8 @@ allPopups.forEach(function (popup) {
 
 // слушатель для открытия попапа с профайлом
 profileEditButton.addEventListener('click', function (evt) {
+    clearValidation(formProfile, validationConfig);
+
     openModal(popupProfile);
 
     startValueFormProfile();
@@ -48,6 +52,8 @@ profileEditButton.addEventListener('click', function (evt) {
 
 // слушатель для открытия попапа для создания новой карточки
 addButton.addEventListener('click', function (evt) {
+    clearValidation(popupNewCard, validationConfig);
+
     openModal(popupNewCard);
 
     inputPlaceNewCard.value = '';
@@ -74,31 +80,6 @@ closePopupAll.forEach((element) => {
         closePopup(popupActiv) });
 });
 
+// вызов функции для валидации форм
+enableValidation();
 
-
-const formInput = formProfile.querySelector('.popup__input');
-
-// слушатель полей формы для валидации
-formInput.addEventListener('input', isValid);
-
-// валидация всех форм
-function isValid() {
-    if(!formInput.validity.valid) {
-        showInputError(formInput);
-    } else {hideInputError(formInput);}
-};
-
-// Функция, которая добавляет класс с ошибкой
-const showInputError = (element) => {
-    const formError = element.querySelector('.form__input-error-name');
-
-    element.classList.add('popup__input_type_error');
-    formError.classList.add('popup__error_visible');
-    console.log(3333);
-  };
-
-// Функция, которая удаляет класс с ошибкой
-const hideInputError = (element) => {
-    element.classList.remove('popup__input_type_error');
-    console.log(4444);
-  };
