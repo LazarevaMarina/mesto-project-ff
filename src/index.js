@@ -1,5 +1,5 @@
 import './pages/index.css';
-import { initialCards } from './cards.js';
+/*import { initialCards } from './cards.js';*/
 import { createCard, deleteCard, addLike } from '../src/components/card.js';
 import { closePopup, openModal} from '../src/components/modal.js';
 import { startValueFormProfile, handleFormSubmitProfile, addNewPlace } from './components/forms.js';
@@ -30,10 +30,10 @@ import { validationConfig, clearValidation, enableValidation} from './components
 
 
 // перебор и выведение карточек
-initialCards.forEach(function addCard(cardElement) {
+/*initialCards.forEach(function addCard(cardElement) {
     const element = createCard(cardTemplate, cardElement, deleteCard, openImagePopup, addLike);
     placesList.append(element);
-});
+});*/
 
 // добавления анимации на все попапы
 allPopups.forEach(function (popup) {
@@ -82,4 +82,71 @@ closePopupAll.forEach((element) => {
 
 // вызов функции для валидации форм
 enableValidation();
+
+
+
+
+
+
+const config = {
+    baseUrl: 'https://nomoreparties.co/v1/wff-cohort-18/cards',
+    headers: {
+        authorization: 'a4dc7346-6d63-432d-8f25-26f0e5379654',
+        'Content-Type': 'application/json'
+    }
+};
+
+// получить от сервера информацию о юзере
+const getUser = fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {headers: config.headers})
+    .then((data) => {
+        const user = data.json();
+        return user    
+        });
+
+// получить от сервера карточки
+const getCards = fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {headers: config.headers})
+    .then((data) => {
+        const cards = data.json();
+        return cards    
+        });
+
+// функция для выполнение запросов на сервер для получения данных пользователя
+Promise.all([getUser, getCards])
+  .then(([user, cards]) => {
+    installInfoAboutUser(user);
+    getAllCards(cards);
+  })
+  .catch((err) => {
+    console.error("Произошла ошибка:", err);
+  });
+
+
+
+
+const userName = document.querySelector('.profile__title');
+const userProfession = document.querySelector('.profile__description');
+const imageProfile = document.querySelector('.profile__image');
+
+// функция для установке данных пользователя
+function installInfoAboutUser(user) {
+    userName.textContent = user.name;
+    userProfession.textContent = user.about;
+    imageProfile.setAttribute(
+        "style",
+        `background-image: url('${user.avatar}')`
+      );
+    let userId = user._id;
+};
+
+// функция для выведения карточек с сервера на монитор
+function getAllCards(cards) {
+    console.log(cards);
+    cards.forEach(function addCard(cardElement) {
+        const element = createCard(cardTemplate, cardElement, deleteCard, openImagePopup, addLike);
+        placesList.append(element);
+    });  
+}; 
+
+    
+
 
