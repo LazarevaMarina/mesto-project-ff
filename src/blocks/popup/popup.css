@@ -21,3 +21,12 @@
   right: 0;
   z-index: 10;
 }
+
+.popup__input_type_error {
+  border-bottom: solid 1px #ff0000;
+}
+
+.form__input-error {
+  font-size: 14px;
+  color: #ff0000;
+}
