@@ -96,17 +96,6 @@ const enableValidation = () => {
 
 enableValidation();
 
-// слушатель полей формы для валидации
-/*const setEventListeners = (formElement) => {
-    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-
-    inputList.forEach((inputElement) => {
-        inputElement.addEventListener('input', () => (isValid(formElement, inputElement)));
-    })
-
-}*/
-
-
 // валидация всех форм
 function isValid(formElement, inputElement) {
     if(!inputElement.validity.valid) {
@@ -120,7 +109,7 @@ const showInputError = (formElement, inputElement) => {
 
     inputElement.classList.add('popup__input_type_error');
     formError.classList.add('popup__error_visible');
-    formError.textContent = 'Привет!';
+    formError.textContent = '';
   };
 
 // Функция, которая удаляет класс с ошибкой

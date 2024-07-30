@@ -1,7 +1,7 @@
 import { userId, currentUser } from "../index";
 import { addLikeCard, removeLikeCard } from "../api";
 
-export function createCard(cardTemplate, element, openImagePopup, currentUser) { // удалена функция deleteCard из аргументов, может быть в этом причина проблемы с карточкой
+export function createCard(cardTemplate, element, openImagePopup, currentUser) { 
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const deleteButton = cardElement.querySelector('.card__delete-button');
     const cardElementImage = cardElement.querySelector('.card__image');
@@ -15,9 +15,9 @@ export function createCard(cardTemplate, element, openImagePopup, currentUser) {
     cardElementImage.alt = element.name;
     cardElementTitle.textContent = element.name;
     
-    const counterLike = element.likes.length;
-    const htmlLikeCard = `<span class="count">${counterLike}<\span>`;
-    containerLike.insertAdjacentHTML('afterEnd', htmlLikeCard);
+    const container = cardElement.querySelector('.container');
+
+    container.textContent = element.likes.length;
 
 
     cardElementImage.addEventListener('click', () => {
@@ -51,7 +51,7 @@ export function deleteCard(cardElement) {
 // Функция добавления/удаления лайка
 export function addRemoveLike (likeButton, element, cardElement) {
     const cardId = element._id;
-    const containerLike = cardElement.querySelector('.count');
+    const containerLike = cardElement.querySelector('.container');
 
    if (likeButton.classList.contains('card__like-button_is-active')) {
         removeLikeCard(cardId)
@@ -63,7 +63,7 @@ export function addRemoveLike (likeButton, element, cardElement) {
         
     }
     else {
-        const aaa = addLikeCard(cardId)
+        addLikeCard(cardId)
         .then((cardData) => {
             likeButton.classList.add('card__like-button_is-active')
             const counterLike = cardData.likes.length;
