@@ -1,9 +1,9 @@
 import './pages/index.css';
-/*import { initialCards } from './cards.js';*/
-import { createCard, deleteCard, addLike } from '../src/components/card.js';
+import { createCard, deleteCard, addRemoveLike } from '../src/components/card.js';
 import { closePopup, openModal} from '../src/components/modal.js';
 import { startValueFormProfile, handleFormSubmitProfile, addNewPlace } from './components/forms.js';
-
+import { getUser, getCards, addLikeCard, patchAvatar } from './api.js';
+import { setEventListeners } from './components/validation.js';
 
 const containerMain = document.querySelector('.content');
 const addButton = containerMain.querySelector('.profile__add-button');
@@ -15,25 +15,32 @@ export const popupNewCard = document.querySelector('.popup_type_new-card');
 const inputPlaceNewCard = popupNewCard.querySelector('.popup__input_type_card-name');
 const inputLinkNewCard = popupNewCard.querySelector('.popup__input_type_url');
 
+const profileTitle = document.querySelector('.profile__title');
+const profileDesc = document.querySelector('.profile__description');
+const profileAvatar = document.querySelector('.profile__image');
+const profileAvatarOverlay = document.querySelector('.profile__overlay');
+const placeList = document.querySelector('.places__list');
+
 const allPopups = document.querySelectorAll('.popup');
 
 export const formProfile = document.forms["edit-profile"];
 export const formNewPlace = document.forms["new-place"];
+
+
 
 export const containerPage = document.querySelector('.page');
 export const popupImage = document.querySelector('.popup_type_image');
 const popupTitle = popupImage.querySelector('.popup__caption');
 const imageCard = popupImage.querySelector('.popup__image');
 const closePopupAll = document.querySelectorAll('.popup__close');
+const popupAvatar = document.querySelector('.popup_type_avatar');
+const formAvatar = document.forms["new-avatar"];
+const inpurtAvatarProfile = formAvatar.querySelector('.popup__input_type_url');
+const formPopupNewCard = popupNewCard.querySelector('.popup__form');
 
-import { validationConfig, clearValidation, enableValidation} from './components/validation.js';
 
+export let currentUser = "null";
 
-// перебор и выведение карточек
-/*initialCards.forEach(function addCard(cardElement) {
-    const element = createCard(cardTemplate, cardElement, deleteCard, openImagePopup, addLike);
-    placesList.append(element);
-});*/
 
 // добавления анимации на все попапы
 allPopups.forEach(function (popup) {
@@ -42,23 +49,20 @@ allPopups.forEach(function (popup) {
 
 // слушатель для открытия попапа с профайлом
 profileEditButton.addEventListener('click', function (evt) {
-    clearValidation(formProfile, validationConfig);
-
     openModal(popupProfile);
 
     startValueFormProfile();
-}
+    }
 );
 
 // слушатель для открытия попапа для создания новой карточки
 addButton.addEventListener('click', function (evt) {
-    clearValidation(popupNewCard, validationConfig);
-
     openModal(popupNewCard);
 
     inputPlaceNewCard.value = '';
     inputLinkNewCard.value = '';
-});
+    }
+);
 
 // слушатель для редактирования профиля и отправки на сервер
 formProfile.addEventListener('submit', handleFormSubmitProfile);
@@ -80,73 +84,128 @@ closePopupAll.forEach((element) => {
         closePopup(popupActiv) });
 });
 
-// вызов функции для валидации форм
+// функция для поиска всех форм на странице
+const enableValidation = () => {
+    const formList = Array.from(document.querySelectorAll('.popup__form'));
+  
+    formList.forEach((formElement) => {
+      /*evt.preventDefault();*/
+      setEventListeners(formElement);
+    });
+  };
+
 enableValidation();
 
+// слушатель полей формы для валидации
+/*const setEventListeners = (formElement) => {
+    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+
+    inputList.forEach((inputElement) => {
+        inputElement.addEventListener('input', () => (isValid(formElement, inputElement)));
+    })
+
+}*/
 
 
-
-
-
-const config = {
-    baseUrl: 'https://nomoreparties.co/v1/wff-cohort-18/cards',
-    headers: {
-        authorization: 'a4dc7346-6d63-432d-8f25-26f0e5379654',
-        'Content-Type': 'application/json'
-    }
+// валидация всех форм
+function isValid(formElement, inputElement) {
+    if(!inputElement.validity.valid) {
+        showInputError(formElement, inputElement);
+    } else {hideInputError(formElement. inputElement);}
 };
 
-// получить от сервера информацию о юзере
-const getUser = fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {headers: config.headers})
-    .then((data) => {
-        const user = data.json();
-        return user    
-        });
+// Функция, которая добавляет класс с ошибкой
+const showInputError = (formElement, inputElement) => {
+    const formError = formProfile.querySelector('.form__input-error');
 
-// получить от сервера карточки
-const getCards = fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {headers: config.headers})
-    .then((data) => {
-        const cards = data.json();
-        return cards    
-        });
+    inputElement.classList.add('popup__input_type_error');
+    formError.classList.add('popup__error_visible');
+    formError.textContent = 'Привет!';
+  };
 
-// функция для выполнение запросов на сервер для получения данных пользователя
-Promise.all([getUser, getCards])
+// Функция, которая удаляет класс с ошибкой
+const hideInputError = (formElement, inputElement) => {
+    const formError = formProfile.querySelector('.form__input-error');
+
+    inputElement.classList.remove('popup__input_type_error');
+    formError.classList.remove('popup__error_visible');
+    formError.textContent = '';
+  };
+
+// получение пользователя/карточки
+Promise.all(([getUser(), getCards()]))
   .then(([user, cards]) => {
-    installInfoAboutUser(user);
-    getAllCards(cards);
-  })
-  .catch((err) => {
-    console.error("Произошла ошибка:", err);
+    handlingUser(user);
+    currentUser = user._id;
+    cards.forEach((card) => {
+      placeList.append(createCard(cardTemplate, card, openImagePopup, currentUser))
+    })
+    return user;
+    })
+    .catch((error) => {
+    console.log(error)
   });
 
-
-
-
-const userName = document.querySelector('.profile__title');
-const userProfession = document.querySelector('.profile__description');
-const imageProfile = document.querySelector('.profile__image');
-
-// функция для установке данных пользователя
-function installInfoAboutUser(user) {
-    userName.textContent = user.name;
-    userProfession.textContent = user.about;
-    imageProfile.setAttribute(
-        "style",
-        `background-image: url('${user.avatar}')`
-      );
-    let userId = user._id;
-};
-
-// функция для выведения карточек с сервера на монитор
-function getAllCards(cards) {
-    console.log(cards);
-    cards.forEach(function addCard(cardElement) {
-        const element = createCard(cardTemplate, cardElement, deleteCard, openImagePopup, addLike);
-        placesList.append(element);
-    });  
-}; 
-
+// функция выведения данных пользователя на страницу
+const handlingUser = (user) => {
+    const userName = user.name;
+    const userProfession = user.about;
+    const userAvatarLink = user.avatar;
     
+    profileTitle.textContent = userName;
+    profileDesc.textContent = userProfession;
+    profileAvatar.src = userAvatarLink;
+  };
+
+// функция открытия попапа по клику на картинку
+const openPopupImage = (name, link) => {
+    const popupTypeImage = document.querySelector('.popup_type_image')
+    const popupImage = popupTypeImage.querySelector('.popup__image')
+    const popupCaption = popupTypeImage.querySelector('.popup__caption')
+  
+    popupImage.src = link
+    popupImage.alt = name
+    popupCaption.textContent = name
+  
+    openPopup(popupTypeImage)
+  };
+
+// функция обновления аватара пользователя
+const avatarFormSubmit = (evt) => {
+    evt.preventDefault()
+
+    const formButton = formAvatar.querySelector('.popup__button');
+    const popupActiv = document.querySelector('.popup_is-opened');
+  
+    const avatarValue = inpurtAvatarProfile.value;
+
+    renderLoading(true, popupActiv); 
+
+    patchAvatar(avatarValue)
+    .then((data) => {
+      profileAvatar.src = data.avatar 
+      closePopup(popupAvatar)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    .finally(() => {
+      renderLoading(false, popupActiv);
+    })
+ };
+
+// слушатель, который весит на форме в попапе аватара  
+formAvatar.addEventListener('submit', avatarFormSubmit);
+
+// слушатель, который вестит на аватаре пользователя для его открытия
+profileAvatarOverlay.addEventListener('click', () => openModal(popupAvatar));
 
 
+export const renderLoading = (isLoading, popupActiv) => {
+    const activeButton = popupActiv.querySelector(".popup__button");
+    if (isLoading) {
+      activeButton.textContent = "Сохранение...";
+    } else {
+      activeButton.textContent = "Сохранить";
+    }
+  };

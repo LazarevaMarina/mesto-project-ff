@@ -1,6 +1,7 @@
 import { closePopup } from '../components/modal';
-import { createCard, deleteCard, addLike } from './card';
-import { placesList, openImagePopup, popupProfile, popupNewCard} from '../index.js';
+import { createCard, deleteCard} from './card';
+import { placesList, openImagePopup, popupProfile, popupNewCard, currentUser, renderLoading} from '../index.js';
+import { patchProfile, postNewCard } from '../api.js';
 
 const formProfile = document.forms["edit-profile"];
 const formNewPlace = document.forms["new-place"];
@@ -23,16 +24,32 @@ export function startValueFormProfile() {
 // функция редактирования профиля
 export function handleFormSubmitProfile(evt) {
     evt.preventDefault();
+    const popupActiv = document.querySelector('.popup_is-opened');
+    console.log(popupActiv)
 
-    userName.textContent = nameFamily.value;
-    userProfession.textContent = profession.value;
+    patchProfile(nameFamily.value, profession.value)
+    .then((data) =>{
+        userName.textContent = nameFamily.value;
+        userProfession.textContent = profession.value;
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+    .finally(() => {
+        renderLoading(false, popupActiv);
+    })
+
+
+    /*userName.textContent = nameFamily.value;
+    userProfession.textContent = profession.value;*/
 
     closePopup(popupProfile);
-}
+};
 
 //функция добавления карточки
 export function addNewPlace(evt) {
     evt.preventDefault();
+    const popupActiv = document.querySelector('.popup_is-opened');
 
     const placeName = formNewPlace.elements["place-name"];
     const placeLink = formNewPlace.elements.link;
@@ -42,8 +59,14 @@ export function addNewPlace(evt) {
         link: placeLink.value
     };
 
-    const newElement = createCard(cardTemplate, element, deleteCard, openImagePopup, addLike);
-    placesList.prepend(newElement);
+    postNewCard(element.name, element.link)
+    .then((res) => {
+        const newElement = createCard(cardTemplate, res, openImagePopup, currentUser);
+        placesList.prepend(newElement);
+    })  
+    .finally(() => {
+        renderLoading(false, popupActiv);
+    })
 
-    closePopup( popupNewCard);
-}
+    closePopup(popupNewCard);
+};
