@@ -17,6 +17,12 @@ export function createCard(cardTemplate, element, openImagePopup, currentUser) {
     
     const container = cardElement.querySelector('.container');
 
+    const isLiked = element.likes.some((like) => like._id === currentUser);
+
+
+    if (isLiked) {
+        likeButton.classList.add("card__like-button_is-active");
+    }
     container.textContent = element.likes.length;
 
 
@@ -65,7 +71,7 @@ export function addRemoveLike (likeButton, element, cardElement) {
     else {
         addLikeCard(cardId)
         .then((cardData) => {
-            likeButton.classList.add('card__like-button_is-active')
+            likeButton.classList.add('card__like-button_is-active');
             const counterLike = cardData.likes.length;
             containerLike.textContent = counterLike;
         })
