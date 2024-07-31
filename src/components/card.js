@@ -1,5 +1,5 @@
 import { userId, currentUser } from "../index";
-import { addLikeCard, removeLikeCard } from "../api";
+import { addLikeCard, removeLikeCard, deleteUserCard } from "../api";
 
 export function createCard(cardTemplate, element, openImagePopup, currentUser) { 
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
@@ -45,13 +45,16 @@ function deleteButtonCard(deleteButton, element, currentUser, cardElement) {
 
     if (currentUser===cardOwnerId) {
         deleteButton.setAttribute("style", "display: block;");
-        deleteButton.addEventListener('click', () => {deleteCard(cardElement)});
+        deleteButton.addEventListener('click', () => {deleteCard(cardElement, cardId)});
     };
 };
 
 // функция для удаления карточек
-export function deleteCard(cardElement) {
-    cardElement.remove();
+export function deleteCard(cardElement, cardId) {
+    deleteUserCard(cardId)
+    .then(() => {
+        cardElement.remove()
+      })
 };
 
 // Функция добавления/удаления лайка
