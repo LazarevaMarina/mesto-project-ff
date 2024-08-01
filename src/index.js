@@ -65,8 +65,7 @@ formProfile.addEventListener('submit', handleFormSubmitProfile);
 
 formNewPlace.addEventListener('submit', addNewPlace);
 
-// слушатель, который весит на форме в попапе аватара  
-formAvatar.addEventListener('submit', avatarFormSubmit); // слушатели сабмита не находятся в forms, они находятся здесь, только выше. не стала переносить.
+
 
 // функция для открытия попапа с карточкой
 export function openImagePopup(image) {
@@ -116,7 +115,9 @@ const handlingUser = (user) => {
 // функция обновления аватара пользователя
 const avatarFormSubmit = (evt) => {
     evt.preventDefault()
-  
+
+    const formButton = formAvatar.querySelector('.popup__button'); 
+    
     const avatarValue = inpurtAvatarProfile.value;
 
     renderLoading(true, popupAvatar); 
@@ -133,6 +134,9 @@ const avatarFormSubmit = (evt) => {
       renderLoading(false, popupAvatar);
     })
  };
+
+// слушатель, который весит на форме в попапе аватара  
+formAvatar.addEventListener('submit', avatarFormSubmit); // все слушатели сабмит находятся в этой вкладке, только выше, поэтому переность в form не стала.
 
 // слушатель, который вестит на аватаре пользователя для его открытия
 profileAvatarOverlay.addEventListener('click', () => {

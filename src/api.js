@@ -13,7 +13,7 @@ const config = {
 
 // запрос на получение информации от сервера о юзере
 export const getUser = () => {
-    return fetch(`${config.baseUrl}/users/me`, {
+    return fetch(`${config.baseUrl}users/me`, {
         headers: config.headers
     })
     .then((data) => {
@@ -69,7 +69,7 @@ export const deleteUserCard = function(cardId) {
 
 // запрос для отправки на сервер отредактированных данных профеля
 export const patchProfile = function(nameFemile, profession) {
-  return fetch(`${config.baseUrl}/users/me`, {
+  return fetch(`${config.baseUrl}users/me`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
@@ -100,7 +100,7 @@ export const removeLikeCard = (cardId) => {
 
 // запрос для обновления аватара пользователя
 export const patchAvatar = (avatarValue) => {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
+  return fetch(`${config.baseUrl}users/me/avatar`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
