@@ -1,3 +1,8 @@
 .popup__form {
   margin-top: 27px;
 }
+
+.input-error {
+  display: flex;
+  flex-direction: row;
+}

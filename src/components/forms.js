@@ -1,10 +1,14 @@
 import { closePopup } from '../components/modal';
 import { createCard, deleteCard} from './card';
-import { placesList, openImagePopup, popupProfile, popupNewCard, currentUser, renderLoading} from '../index.js';
+import { openImagePopup, currentUser, renderLoading} from '../index.js';
 import { patchProfile, postNewCard } from '../api.js';
 
-const formProfile = document.forms["edit-profile"];
-const formNewPlace = document.forms["new-place"];
+export const containerMain = document.querySelector('.content');
+export const placeList = document.querySelector('.places__list');
+export const popupProfile = document.querySelector('.popup_type_edit');
+export const popupNewCard = document.querySelector('.popup_type_new-card');
+export const formProfile = document.forms["edit-profile"];
+export const formNewPlace = document.forms["new-place"];
 
 const nameFamily = formProfile.elements.name;
 const profession = formProfile.elements.description;
@@ -24,33 +28,27 @@ export function startValueFormProfile() {
 // функция редактирования профиля
 export function handleFormSubmitProfile(evt) {
     evt.preventDefault();
-    const popupActiv = document.querySelector('.popup_is-opened');
-    console.log(popupActiv)
+
+    renderLoading(true, popupProfile); 
 
     patchProfile(nameFamily.value, profession.value)
     .then((data) =>{
         userName.textContent = nameFamily.value;
         userProfession.textContent = profession.value;
+        closePopup(popupProfile);
     })
     .catch((error) => {
         console.log(error)
-    })
+    }) 
     .finally(() => {
-        renderLoading(false, popupActiv);
+        renderLoading(false, popupProfile);
     })
-
-
-    /*userName.textContent = nameFamily.value;
-    userProfession.textContent = profession.value;*/
-
-    closePopup(popupProfile);
 };
 
 //функция добавления карточки
-export function addNewPlace(evt) {
+    export function addNewPlace(evt) {
     evt.preventDefault();
-    const popupActiv = document.querySelector('.popup_is-opened');
-
+    
     const placeName = formNewPlace.elements["place-name"];
     const placeLink = formNewPlace.elements.link;
 
@@ -59,14 +57,15 @@ export function addNewPlace(evt) {
         link: placeLink.value
     };
 
+    renderLoading(true, popupNewCard); 
+
     postNewCard(element.name, element.link)
     .then((res) => {
         const newElement = createCard(cardTemplate, res, openImagePopup, currentUser);
-        placesList.prepend(newElement);
+        placeList.prepend(newElement);
+        closePopup(popupNewCard);
     })  
     .finally(() => {
-        renderLoading(false, popupActiv);
+        renderLoading(false, popupNewCard);
     })
-
-    closePopup(popupNewCard);
 };

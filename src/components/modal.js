@@ -10,15 +10,14 @@ function closePopupEsc(evt) {
 // функция закрытия по оверлею
 function closePopupOverlay(evt) {
     if (evt.target.classList.value.includes('popup_type')) {
-        const popupActiv = document.querySelector('.popup_is-opened');
-        closePopup(popupActiv);
+        closePopup(evt.target);
     };
 };
 
 // функция закрытия попапа и снятия слушателей
 export function closePopup(popupActiv) {
-    document.removeEventListener('keydown', openModal);
-    document.removeEventListener('click', openModal);
+    document.removeEventListener('keydown', closePopupEsc);
+    document.removeEventListener('click', closePopupOverlay);
 
     popupActiv.classList.remove('popup_is-opened');
 };
@@ -30,3 +29,4 @@ export function openModal(element) {
     document.addEventListener('keydown', closePopupEsc);
     document.addEventListener('click', closePopupOverlay);
 };
+

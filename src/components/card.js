@@ -55,6 +55,9 @@ export function deleteCard(cardElement, cardId) {
     .then(() => {
         cardElement.remove()
       })
+      .catch((error) => {
+        console.log(error)
+      })
 };
 
 // Функция добавления/удаления лайка

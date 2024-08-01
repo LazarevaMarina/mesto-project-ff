@@ -1,45 +1,37 @@
 import './pages/index.css';
-import { createCard, deleteCard, addRemoveLike } from '../src/components/card.js';
+import { createCard } from '../src/components/card.js';
 import { closePopup, openModal} from '../src/components/modal.js';
-import { startValueFormProfile, handleFormSubmitProfile, addNewPlace } from './components/forms.js';
-import { getUser, getCards, addLikeCard, patchAvatar } from './api.js';
-import { setEventListeners } from './components/validation.js';
+import { startValueFormProfile, handleFormSubmitProfile, addNewPlace, placeList, popupNewCard, formProfile, popupProfile, formNewPlace, containerMain } from './components/forms.js';
+import { getUser, getCards, patchAvatar } from './api.js';
+import { clearValidation, enableValidation} from './components/validation.js';
 
-const containerMain = document.querySelector('.content');
 const addButton = containerMain.querySelector('.profile__add-button');
-export const placesList = containerMain.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template').content;
 const profileEditButton = containerMain.querySelector('.profile__edit-button');
-export const popupProfile = document.querySelector('.popup_type_edit');
-export const popupNewCard = document.querySelector('.popup_type_new-card');
 const inputPlaceNewCard = popupNewCard.querySelector('.popup__input_type_card-name');
 const inputLinkNewCard = popupNewCard.querySelector('.popup__input_type_url');
-
 const profileTitle = document.querySelector('.profile__title');
 const profileDesc = document.querySelector('.profile__description');
 const profileAvatar = document.querySelector('.profile__image');
 const profileAvatarOverlay = document.querySelector('.profile__overlay');
-const placeList = document.querySelector('.places__list');
 
 const allPopups = document.querySelectorAll('.popup');
-
-export const formProfile = document.forms["edit-profile"];
-export const formNewPlace = document.forms["new-place"];
-
-
-
-export const containerPage = document.querySelector('.page');
-export const popupImage = document.querySelector('.popup_type_image');
+const popupImage = document.querySelector('.popup_type_image');
 const popupTitle = popupImage.querySelector('.popup__caption');
 const imageCard = popupImage.querySelector('.popup__image');
 const closePopupAll = document.querySelectorAll('.popup__close');
 const popupAvatar = document.querySelector('.popup_type_avatar');
 const formAvatar = document.forms["new-avatar"];
 const inpurtAvatarProfile = formAvatar.querySelector('.popup__input_type_url');
-const formPopupNewCard = popupNewCard.querySelector('.popup__form');
 
-
-export let currentUser = "null";
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
 
 
 // добавления анимации на все попапы
@@ -52,6 +44,8 @@ profileEditButton.addEventListener('click', function (evt) {
     openModal(popupProfile);
 
     startValueFormProfile();
+
+    clearValidation(popupProfile, validationConfig);
     }
 );
 
@@ -61,6 +55,8 @@ addButton.addEventListener('click', function (evt) {
 
     inputPlaceNewCard.value = '';
     inputLinkNewCard.value = '';
+
+    clearValidation(popupNewCard, validationConfig);
     }
 );
 
@@ -68,6 +64,9 @@ addButton.addEventListener('click', function (evt) {
 formProfile.addEventListener('submit', handleFormSubmitProfile);
 
 formNewPlace.addEventListener('submit', addNewPlace);
+
+// слушатель, который весит на форме в попапе аватара  
+formAvatar.addEventListener('submit', avatarFormSubmit); // слушатели сабмита не находятся в forms, они находятся здесь, только выше. не стала переносить.
 
 // функция для открытия попапа с карточкой
 export function openImagePopup(image) {
@@ -79,47 +78,15 @@ export function openImagePopup(image) {
 
 // слушатель закрытия попапа через крест
 closePopupAll.forEach((element) => {
-    element.addEventListener('click', () => { 
-        const popupActiv = document.querySelector('.popup_is-opened');
-        closePopup(popupActiv) });
+  const popup = element.closest('.popup');
+  element.addEventListener("click", () => {
+    closePopup(popup);
+  });
 });
 
-// функция для поиска всех форм на странице
-const enableValidation = () => {
-    const formList = Array.from(document.querySelectorAll('.popup__form'));
-  
-    formList.forEach((formElement) => {
-      /*evt.preventDefault();*/
-      setEventListeners(formElement);
-    });
-  };
+enableValidation(validationConfig);
 
-enableValidation();
-
-// валидация всех форм
-function isValid(formElement, inputElement) {
-    if(!inputElement.validity.valid) {
-        showInputError(formElement, inputElement);
-    } else {hideInputError(formElement. inputElement);}
-};
-
-// Функция, которая добавляет класс с ошибкой
-const showInputError = (formElement, inputElement) => {
-    const formError = formProfile.querySelector('.form__input-error');
-
-    inputElement.classList.add('popup__input_type_error');
-    formError.classList.add('popup__error_visible');
-    formError.textContent = '';
-  };
-
-// Функция, которая удаляет класс с ошибкой
-const hideInputError = (formElement, inputElement) => {
-    const formError = formProfile.querySelector('.form__input-error');
-
-    inputElement.classList.remove('popup__input_type_error');
-    formError.classList.remove('popup__error_visible');
-    formError.textContent = '';
-  };
+export let currentUser = "null";
 
 // получение пользователя/карточки
 Promise.all(([getUser(), getCards()]))
@@ -146,29 +113,13 @@ const handlingUser = (user) => {
     profileAvatar.src = userAvatarLink;
   };
 
-// функция открытия попапа по клику на картинку
-const openPopupImage = (name, link) => {
-    const popupTypeImage = document.querySelector('.popup_type_image')
-    const popupImage = popupTypeImage.querySelector('.popup__image')
-    const popupCaption = popupTypeImage.querySelector('.popup__caption')
-  
-    popupImage.src = link
-    popupImage.alt = name
-    popupCaption.textContent = name
-  
-    openPopup(popupTypeImage)
-  };
-
 // функция обновления аватара пользователя
 const avatarFormSubmit = (evt) => {
     evt.preventDefault()
-
-    const formButton = formAvatar.querySelector('.popup__button');
-    const popupActiv = document.querySelector('.popup_is-opened');
   
     const avatarValue = inpurtAvatarProfile.value;
 
-    renderLoading(true, popupActiv); 
+    renderLoading(true, popupAvatar); 
 
     patchAvatar(avatarValue)
     .then((data) => {
@@ -179,16 +130,15 @@ const avatarFormSubmit = (evt) => {
       console.log(error)
     })
     .finally(() => {
-      renderLoading(false, popupActiv);
+      renderLoading(false, popupAvatar);
     })
  };
 
-// слушатель, который весит на форме в попапе аватара  
-formAvatar.addEventListener('submit', avatarFormSubmit);
-
 // слушатель, который вестит на аватаре пользователя для его открытия
-profileAvatarOverlay.addEventListener('click', () => openModal(popupAvatar));
-
+profileAvatarOverlay.addEventListener('click', () => {
+    openModal(popupAvatar);
+    clearValidation(popupAvatar, validationConfig);
+  });
 
 export const renderLoading = (isLoading, popupActiv) => {
     const activeButton = popupActiv.querySelector(".popup__button");
